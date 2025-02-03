@@ -24,35 +24,13 @@ export default class {
     this.onNavigate(ROUTES_PATH["NewBill"]);
   };
 
-  // fix: [Bug hunt] - Bills
+
   handleClickIconEye = (icon) => {
-    const billUrl = icon.getAttribute("data-bill-url");
-    const fileName = icon.getAttribute("data-bill-name");
-
-    const modalBody = $("#modaleFile").find(".modal-body");
-
-    if (billUrl) {
-      const imgWidth = Math.floor($("#modaleFile").width() * 0.5);
-      modalBody.html(
-        `<div style='text-align: center;' class="bill-proof-container">
-          <img 
-            width=${imgWidth} 
-            src=${billUrl} 
-            alt="${fileName || "Justificatif"}"
-            onerror="this.onerror=null; this.parentElement.innerHTML='<p class=\'text-danger\'>Impossible de charger l\'image</p>';"
-          />
-        </div>`
-      );
-    } else {
-      modalBody.html(
-        `<div class="text-center">
-          <p class="text-danger">Pas de justificatif disponible pour cette note de frais</p>
-        </div>`
-      );
-    }
-
-    $("#modaleFile").modal("show");
-  };
+    const billUrl = icon.getAttribute("data-bill-url")
+    const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
+    $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
+    $('#modaleFile').modal('show')
+  }
 
   getBills = () => {
     if (this.store) {

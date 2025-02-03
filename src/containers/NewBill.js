@@ -18,7 +18,7 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate });
   }
 
-  // fix: [Bug hunt] - Bills
+  
   handleChangeFile = (e) => {
     e.preventDefault();
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
@@ -30,6 +30,7 @@ export default class NewBill {
     const fileExtension = fileName.split(".").pop().toLowerCase();
     const allowedExtensions = ["jpg", "jpeg", "png"];
 
+    // fix: [Bug hunt] - Bills
     if (!allowedExtensions.includes(fileExtension)) {
       fileInput.value = ""; // Reset the input
       alert("Seuls les fichiers jpg, jpeg et png sont acceptés");
