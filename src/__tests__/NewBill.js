@@ -23,8 +23,8 @@ describe("Given I am connected as an employee", () => {
     });
 
     // Test d'upload d'un fichier
-    describe("When I upload a file", () => {
-      test("Then the file extension should be checked", () => {
+    describe("When I upload a valid file", () => {
+      test("Then the file should be accepted", () => {
         Object.defineProperty(window, "localStorage", {
           value: localStorageMock,
         });
@@ -62,11 +62,46 @@ describe("Given I am connected as an employee", () => {
         });
         expect(handleChangeFile).toHaveBeenCalled();
         expect(file.files[0].name).toBe("test.jpg");
+      });
+    });
+    // Test d'upload d'un fichier
+    describe("When I upload an invalid file", () => {
+      test("Then the file should be rejected", () => {
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "a@a",
+          })
+        );
+
+        const html = NewBillUI();
+        document.body.innerHTML = html;
+
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+
+        const handleChangeFile = jest.fn(newBill.handleChangeFile);
+        const file = screen.getByTestId("file");
+        file.addEventListener("change", handleChangeFile);
 
         // Test with invalid file
         fireEvent.change(file, {
           target: {
-            files: [new File(["document"], "test.pdf", { type: "application/pdf" })],
+            files: [
+              new File(["document"], "test.pdf", { type: "application/pdf" }),
+            ],
           },
         });
         expect(handleChangeFile).toHaveBeenCalled();
@@ -145,7 +180,9 @@ describe("Given I am connected as an employee", () => {
   describe("When an error occurs on API", () => {
     beforeEach(() => {
       jest.spyOn(mockStore, "bills");
-      Object.defineProperty(window, "localStorage", { value: localStorageMock });
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
       window.localStorage.setItem(
         "user",
         JSON.stringify({
@@ -167,17 +204,18 @@ describe("Given I am connected as an employee", () => {
           },
           update: () => {
             return Promise.resolve();
-          }
+          },
         };
       });
 
       const html = NewBillUI();
       document.body.innerHTML = html;
-      
+
       // Simuler la création d'une nouvelle facture
       const newBill = new NewBill({
         document,
-        onNavigate: (pathname) => document.body.innerHTML = ROUTES({ pathname }),
+        onNavigate: (pathname) =>
+          (document.body.innerHTML = ROUTES({ pathname })),
         store: mockStore,
         localStorage: window.localStorage,
       });
@@ -186,7 +224,7 @@ describe("Given I am connected as an employee", () => {
       const file = screen.getByTestId("file");
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
       file.addEventListener("change", handleChangeFile);
-      
+
       fireEvent.change(file, {
         target: {
           files: [new File(["image"], "test.jpg", { type: "image/jpg" })],
@@ -206,16 +244,17 @@ describe("Given I am connected as an employee", () => {
           },
           update: () => {
             return Promise.resolve();
-          }
+          },
         };
       });
 
       const html = NewBillUI();
       document.body.innerHTML = html;
-      
+
       const newBill = new NewBill({
         document,
-        onNavigate: (pathname) => document.body.innerHTML = ROUTES({ pathname }),
+        onNavigate: (pathname) =>
+          (document.body.innerHTML = ROUTES({ pathname })),
         store: mockStore,
         localStorage: window.localStorage,
       });
@@ -224,7 +263,7 @@ describe("Given I am connected as an employee", () => {
       const file = screen.getByTestId("file");
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
       file.addEventListener("change", handleChangeFile);
-      
+
       fireEvent.change(file, {
         target: {
           files: [new File(["image"], "test.jpg", { type: "image/jpg" })],

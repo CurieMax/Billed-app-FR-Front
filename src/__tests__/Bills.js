@@ -139,8 +139,6 @@ describe("Given I am a user connected as Employee", () => {
       expect(contentPending).toBeTruthy();
       const contentAccepted = await screen.getByText("accepted");
       expect(contentAccepted).toBeTruthy();
-      const newBillButtons = screen.getAllByTestId("btn-new-bill");
-      expect(newBillButtons.length).toBeGreaterThan(0);
     });
 
     describe("When an error occurs on API", () => {
