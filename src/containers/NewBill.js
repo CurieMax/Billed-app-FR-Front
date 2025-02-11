@@ -16,12 +16,27 @@ export default class NewBill {
     this.fileName = null;
     this.billId = null;
     new Logout({ document, localStorage, onNavigate });
+
+    // Ajouter le gestionnaire d'événement pour le bouton retour
+    window.addEventListener("popstate", () => {
+      this.onNavigate(ROUTES_PATH["Bills"]);
+    });
   }
 
-  
   handleChangeFile = (e) => {
     e.preventDefault();
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const errorMessage = this.document.querySelector(
+      `[data-testid="file-error-message"]`
+    );
+    // Create error message if needed
+    if (!errorMessage) {
+      const errorDiv = this.document.createElement("div");
+      errorDiv.setAttribute("data-testid", "file-error-message");
+      errorDiv.style.color = "red";
+      errorDiv.style.marginTop = "5px";
+      fileInput.parentNode.insertBefore(errorDiv, fileInput.nextSibling);
+    }
     const file = fileInput.files[0];
 
     if (!file) return;
@@ -33,11 +48,18 @@ export default class NewBill {
     // fix: [Bug hunt] - Bills
     if (!allowedExtensions.includes(fileExtension)) {
       fileInput.value = ""; // Reset the input
-      alert("Seuls les fichiers jpg, jpeg et png sont acceptés");
+      this.document.querySelector(
+        `[data-testid="file-error-message"]`
+      ).textContent = "Seuls les fichiers jpg, jpeg et png sont acceptés";
       this.fileUrl = null;
       this.fileName = null;
       return;
     }
+
+    // Clear error message if file is valid
+    this.document.querySelector(
+      `[data-testid="file-error-message"]`
+    ).textContent = "";
 
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
@@ -59,12 +81,15 @@ export default class NewBill {
       })
       .catch((error) => {
         console.error(error);
-        alert("Erreur lors du téléchargement du fichier");
+        this.document.querySelector(
+          `[data-testid="file-error-message"]`
+        ).textContent = "Erreur lors du téléchargement du fichier";
         fileInput.value = "";
         this.fileUrl = null;
         this.fileName = null;
       });
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
     console.log(
